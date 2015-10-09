@@ -1,7 +1,7 @@
 $date = Get-Date -format dd.MM.yyy-HH.mm
 Start-Transcript -Path log$date.txt
 
-Write-Output "Welcome to the Microsoft Exchange Assistant v0.0.4. This tool is to make diagnostics easier.
+Write-Output "Welcome to the Microsoft Exchange Assistant v0.1.1 This tool is to make diagnostics easier.
 This uses remote powershell connection, so if you do not have it set up, this tool will not work.`n
 http://github.com/audricd/MicrosoftExchangeAssistant `n"
 
@@ -92,17 +92,17 @@ Finally
 do {
   [int]$userMenuChoice = 0
   while ( $userMenuChoice -lt 1 -or $userMenuChoice -gt 4) {
-	Write-Host "1. Print server info"
-	Write-Host "2. Print all mailboxes"
-	Write-Host "3. Print all databases"
+	Write-Host "1. View server info"
+	Write-Host "2. View all mailboxes"
+	Write-Host "3. View all databases"
     Write-Host "4. Exit"
 
     [int]$userMenuChoice = Read-Host "`nPlease choose an option"
 
     switch ($userMenuChoice) {
-	  1{Get-Exchangeserver | fl > "$date-$server-serverinfo.txt"; Write-Output "$date-$server-serverinfo.txt has been generated `n"}
-	  2{Get-Mailbox * | fl > "$date-$server-mailboxes.txt"; Write-Output "$date-$server-mailboxes.txt has been generated `n" }
-	  3{Get-MailboxDatabase * | fl > "$date-$server-mailboxesdatabases.txt"; Write-Output "$date-$server-mailboxesdatabases.txt has been generated `n" }
+	  1{Get-ExchangeServer | ft -wrap -autosize; Get-Exchangeserver | fl > "$date-$server-serverinfo.txt"; Write-Output "$date-$server-serverinfo.txt has been generated with all the details `n"}
+	  2{Get-Mailbox * | ft -wrap -autosize; Get-Mailbox * | fl > "$date-$server-mailboxes.txt"; Write-Output "$date-$server-mailboxes.txt has been generated with all the details `n" }
+	  3{Get-MailboxDatabase | ft -wrap -autosize; Get-MailboxDatabase * | fl > "$date-$server-mailboxesdatabases.txt"; Write-Output "$date-$server-mailboxesdatabases.txt has been generated with all the details`n" }
 }
 }
 	}
