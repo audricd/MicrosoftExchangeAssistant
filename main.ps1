@@ -91,11 +91,12 @@ Finally
 
 do {
   [int]$userMenuChoice = 0
-  while ( $userMenuChoice -lt 1 -or $userMenuChoice -gt 4) {
+  while ( $userMenuChoice -lt 1 -or $userMenuChoice -gt 5) {
 	Write-Host "1. View server info"
 	Write-Host "2. View all mailboxes"
 	Write-Host "3. View all databases"
-    Write-Host "4. Exit"
+	Write-Host "4. View statistics of a specific Mailbox (must know the name)"
+    Write-Host "5. Exit"
 
     [int]$userMenuChoice = Read-Host "`nPlease choose an option"
 
@@ -103,10 +104,11 @@ do {
 	  1{Get-ExchangeServer | ft -wrap -autosize; Get-Exchangeserver | fl > "$date-$server-serverinfo.txt"; Write-Output "$date-$server-serverinfo.txt has been generated with all the details `n"}
 	  2{Get-Mailbox * | ft -wrap -autosize; Get-Mailbox * | fl > "$date-$server-mailboxes.txt"; Write-Output "$date-$server-mailboxes.txt has been generated with all the details `n" }
 	  3{Get-MailboxDatabase | ft -wrap -autosize; Get-MailboxDatabase * | fl > "$date-$server-mailboxesdatabases.txt"; Write-Output "$date-$server-mailboxesdatabases.txt has been generated with all the details`n" }
+	  4{$mailboxstats = Read-Host -Prompt "Which Mailbox do you want to check statistics?"; Get-MailboxStatistics $mailboxstats | ft -Wrap -AutoSize; Get-MailboxStatistics $mailboxstats | fl > "$date-$server-$mailboxstats-mailboxstatistics.txt"; Write-Output "$date-$server-$mailboxstats-mailboxstatistics.txt has been generated with all the details`n" }
 }
 }
 	}
 
- while	 ( $userMenuChoice -ne 4 )
+ while	 ( $userMenuChoice -ne 5 )
 	}
 Stop-Transcript
