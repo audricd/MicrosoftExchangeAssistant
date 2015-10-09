@@ -1,7 +1,13 @@
 $date = Get-Date -format dd.MM.yyy-HH.mm
-Start-Transcript -Path log$date.txt
 
-Write-Output "Welcome to the Microsoft Exchange Assistant v0.1.1 This tool is to make diagnostics easier.
+If(-not(Test-Path -Path logs))
+ {
+     Write-Output "Creating logs folder"
+	 New-Item -Path logs -Type Directory -Force | Out-Null
+  }
+Start-Transcript -Path logs\log$date.txt  | Out-Null
+
+Write-Output "`nWelcome to the Microsoft Exchange Assistant v0.1.3 This tool is to make diagnostics easier.
 This uses remote powershell connection, so if you do not have it set up, this tool will not work.`n
 http://github.com/audricd/MicrosoftExchangeAssistant `n"
 
@@ -73,11 +79,67 @@ if ($version="Version 14.0 (Build 682.1)"){$versiontext = "SP1 UR1"}
 if ($version="Version 14.0 (Build 639.21)"){$versiontext = "RTM"}
 
 
+#2007 SP3
+if ($version="Version 8.3 (Build 417.1)"){$versiontext = "SP3 UR17"}
+if ($version="Version 8.3 (Build 406.0)"){$versiontext = "SP3 UR16"}
+if ($version="Version 8.3 (Build 389.2)"){$versiontext = "SP3 UR15"}
+if ($version="Version 8.3 (Build 379.2)"){$versiontext = "SP3 UR14"}
+if ($version="Version 8.3 (Build 348.2)"){$versiontext = "SP3 UR13"}
+if ($version="Version 8.3 (Build 342.4)"){$versiontext = "SP3 UR12"}
+if ($version="Version 8.3 (Build 327.1)"){$versiontext = "SP3 UR11"}
+if ($version="Version 8.3 (Build 298.3)"){$versiontext = "SP3 UR10"}
+if ($version="Version 8.3 (Build 297.2)"){$versiontext = "SP3 UR9"}
+if ($version="Version 8.3 (Build 279.6)"){$versiontext = "SP3 UR8v3"}
+if ($version="Version 8.3 (Build 279.5)"){$versiontext = "SP3 UR8v2"}
+if ($version="Version 8.3 (Build 279.3)"){$versiontext = "SP3 UR8"}
+if ($version="Version 8.3 (Build 264.0)"){$versiontext = "SP3 UR7"}
+if ($version="Version 8.3 (Build 245.2)"){$versiontext = "SP3 UR6"}
+if ($version="Version 8.3 (Build 213.1)"){$versiontext = "SP3 UR5"}
+if ($version="Version 8.3 (Build 192.1)"){$versiontext = "SP3 UR4"}
+if ($version="Version 8.3 (Build 159.2)"){$versiontext = "SP3 UR3"}
+if ($version="Version 8.3 (Build 137.3)"){$versiontext = "SP3 UR2"}
+if ($version="Version 8.3 (Build 106.2)"){$versiontext = "SP3 UR1"}
+if ($version="Version 8.3 (Build 83.6)"){$versiontext = "SP3"}
+
+
+#2007 SP2
+if ($version="Version 8.2 (Build 305.3)"){$versiontext = "SP2 UR5"}
+if ($version="Version 8.2 (Build 254.0)"){$versiontext = "SP2 UR4"}
+if ($version="Version 8.2 (Build 247.2)"){$versiontext = "SP2 UR3"}
+if ($version="Version 8.2 (Build 234.1)"){$versiontext = "SP3 UR2"}
+if ($version="Version 8.2 (Build 217.3)"){$versiontext = "SP3 UR1"}
+if ($version="Version 8.2 (Build 176.2)"){$versiontext = "SP2"}
+
+
+#2007 SP1
+if ($version="Version 8.1 (Build 436.0)"){$versiontext = "SP1 UR10"}
+if ($version="Version 8.1 (Build 393.1)"){$versiontext = "SP1 UR9"}
+if ($version="Version 8.1 (Build 375.2)"){$versiontext = "SP1 UR8"}
+if ($version="Version 8.1 (Build 359.2)"){$versiontext = "SP1 UR7"}
+if ($version="Version 8.1 (Build 340.1)"){$versiontext = "SP1 UR6"}
+if ($version="Version 8.1 (Build 336.1)"){$versiontext = "SP1 UR5"}
+if ($version="Version 8.1 (Build 311.3)"){$versiontext = "SP1 UR4"}
+if ($version="Version 8.1 (Build 291.2)"){$versiontext = "SP1 UR3"}
+if ($version="Version 8.1 (Build 278.2)"){$versiontext = "SP1 UR2"}
+if ($version="Version 8.1 (Build 263.1)"){$versiontext = "SP1 UR1"}
+if ($version="Version 8.1 (Build 240.6)"){$versiontext = "SP1"}
+
+
+#2007 RTM
+if ($version="Version 8.0 (Build 813.0)"){$versiontext = "RTM UR7"}
+if ($version="Version 8.0 (Build 783.2)"){$versiontext = "RTM UR6"}
+if ($version="Version 8.0 (Build 754.0)"){$versiontext = "RTM UR5"}
+if ($version="Version 8.0 (Build 744.0)"){$versiontext = "RTM UR4"}
+if ($version="Version 8.0 (Build 730.1)"){$versiontext = "RTM UR3"}
+if ($version="Version 8.0 (Build 711.2)"){$versiontext = "RTM UR2"}
+if ($version="Version 8.0 (Build 708.3)"){$versiontext = "RTM UR1"}
+if ($version="Version 8.0 (Build 685.25)"){$versiontext = "RTM"}
+
 Try
  {
 $server = Read-Host -Prompt 'Please input your Exchange server address, in this format "exchange.domain.com"'
 $ExchangeSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri "http://$server/PowerShell" -ErrorAction SilentlyContinue
-Import-PSSession $ExchangeSession -ErrorAction SilentlyContinue
+Import-PSSession $ExchangeSession -ErrorAction SilentlyContinue  | Out-Null
 $version = (Get-ExchangeServer | fw -Property AdminDisplayVersion | Out-String).trim()
 Write-Output "`n$server (running $version, $versiontext)is selected for this session `n"
 
@@ -101,10 +163,10 @@ do {
     [int]$userMenuChoice = Read-Host "`nPlease choose an option"
 
     switch ($userMenuChoice) {
-	  1{Get-ExchangeServer | ft -wrap -autosize; Get-Exchangeserver | fl > "$date-$server-serverinfo.txt"; Write-Output "$date-$server-serverinfo.txt has been generated with all the details `n"}
-	  2{Get-Mailbox * | ft -wrap -autosize; Get-Mailbox * | fl > "$date-$server-mailboxes.txt"; Write-Output "$date-$server-mailboxes.txt has been generated with all the details `n" }
-	  3{Get-MailboxDatabase | ft -wrap -autosize; Get-MailboxDatabase * | fl > "$date-$server-mailboxesdatabases.txt"; Write-Output "$date-$server-mailboxesdatabases.txt has been generated with all the details`n" }
-	  4{$mailboxstats = Read-Host -Prompt "Which Mailbox do you want to check statistics?"; Get-MailboxStatistics $mailboxstats | ft -Wrap -AutoSize; Get-MailboxStatistics $mailboxstats | fl > "$date-$server-$mailboxstats-mailboxstatistics.txt"; Write-Output "$date-$server-$mailboxstats-mailboxstatistics.txt has been generated with all the details`n" }
+	  1{Get-ExchangeServer | ft -wrap -autosize; Get-Exchangeserver | fl > "logs\$date-$server-serverinfo.txt"; Write-Output "$date-$server-serverinfo.txt has been generated with all the details `n"}
+	  2{Get-Mailbox * | ft -wrap -autosize; Get-Mailbox * | fl > "logs\$date-$server-mailboxes.txt"; Write-Output "$date-$server-mailboxes.txt has been generated with all the details `n" }
+	  3{Get-MailboxDatabase | ft -wrap -autosize; Get-MailboxDatabase * | fl > "logs\$date-$server-mailboxesdatabases.txt"; Write-Output "$date-$server-mailboxesdatabases.txt has been generated with all the details`n" }
+	  4{$mailboxstats = Read-Host -Prompt "Which Mailbox do you want to check statistics?"; Get-MailboxStatistics $mailboxstats | ft -Wrap -AutoSize; Get-MailboxStatistics $mailboxstats | fl > "logs\$date-$server-$mailboxstats-mailboxstatistics.txt"; Write-Output "$date-$server-$mailboxstats-mailboxstatistics.txt has been generated with all the details`n" }
 }
 }
 	}
