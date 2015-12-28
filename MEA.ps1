@@ -7,7 +7,7 @@ If(-not(Test-Path -Path logs))
   }
 Start-Transcript -Path logs\log$date.txt  | Out-Null
 
-Write-Output "`nWelcome to the Microsoft Exchange Assistant v0.1.4 This tool is to make diagnostics easier.
+Write-Output "`nWelcome to the Microsoft Exchange Assistant v0.1.4 This tool is to make diagnostics easier. For Services management, use services.ps1
 This uses remote powershell connection, so if you do not have it set up, this tool will not work.`n
 http://github.com/audricd/MicrosoftExchangeAssistant `n"
 
@@ -136,65 +136,7 @@ if ($version="Version 8.0 (Build 708.3)"){$versiontext = "RTM UR1"}
 if ($version="Version 8.0 (Build 685.25)"){$versiontext = "RTM"}
 
 
-#Services
-#Active Directory Topology
-$ADTopology = "MSExchangeADTopology"
-#Anti-Spam Update
-$AntispamUpdate = "MSExchangeAntispamUpdate"
-#DAG Management
-$DagMngt = "MSExchangeDagMgmt"
-#Diagnostics
-$Diags = "MSExchangeDiagnostics"
-#EdgeSync
-$EdgeSync = "MSExchangeEdgeSync"
-#Frontend transport
-$FETransport = "MSExchangeFrontEndTransport"
-#Health Manager
-$HM = "MSExchangeHM"
-#IMAP4
-$Imap4 = "MSExchangeImap4"
-#IMAP4 Backend
-$Imap4BE = "MSExchangeIMAP4BE"
-#Information Store
-$IS = "MSExchangeIS"
-#Mailbox Assistants
-$MBAs = "MSExchangeMailboxAssistants"
-#Mailbox Replication
-$MBRep = "MSExchangeMailboxReplication"
-#Mailbox Transport Delivery
-$Delivery = "MSExchangeDelivery"
-#Mailbox Transport Submission
-$MBSub = "MSExchangeSubmission"
-#Migration Workflow
-$MigWorkflow = "MSExchangeMigrationWorkflow"
-#POP3
-$Pop3 = "MSExchangePop3"
-#POP3 Backend
-$Pop3BE = "MSExchangePOP3BE"
-#Replication
-$Rep = "MSExchangeRepl"
-#RPC Client Access
-$RPC = "MSExchangeRPC"
-#Search
-$FS = "MSExchangeFastSearch"
-#Search Host Controller
-$SearchHostCtrl = "HostControllerService"
-#Server Extension for Windows Server Backup
-$ExtWinBackUp = "wsbexchange"
-#Service Host
-$ServiceHost = "MSExchangeServiceHost"
-#Throttling
-$Throttling = "MSExchangeThrottling"
-#Transport Service
-$Transport = "MSExchangeTransport"
-#Transport Log Search
-$TransportLS = "MSExchangeTransportLogSearch"
-#Unified Messaging
-$UM = "MSExchangeUM"
-#Unified Messaging Call Router
-$UMCR = "MSExchangeUMCR"
-#Filtering Management Service
-$FMS = "FMS"
+
 
 
 Try
@@ -216,14 +158,12 @@ Finally
 
 do {
   [int]$userMenuChoice = 0
-  while ( $userMenuChoice -lt 1 -or $userMenuChoice -gt 6) {
+  while ( $userMenuChoice -lt 1 -or $userMenuChoice -gt 5) {
 	Write-Host "1. View server info"
 	Write-Host "2. View all mailboxes"
 	Write-Host "3. View all databases"
 	Write-Host "4. View statistics of a specific Mailbox (must know the name)"
-	Write-Host "------------SERVICES-------------"
-	Write-Host "5. Check status of a service"
-    Write-Host "6. Exit"
+    Write-Host "5. Exit"
 
     [int]$userMenuChoice = Read-Host "`nPlease choose an option"
 
@@ -232,12 +172,11 @@ do {
 	  2{Get-Mailbox * | ft -wrap -autosize; Get-Mailbox * | fl > "logs\$date-$server-mailboxes.txt"; Write-Output "$date-$server-mailboxes.txt has been generated with all the details `n" }
 	  3{Get-MailboxDatabase | ft -wrap -autosize; Get-MailboxDatabase * | fl > "logs\$date-$server-mailboxesdatabases.txt"; Write-Output "$date-$server-mailboxesdatabases.txt has been generated with all the details`n" }
 	  4{$mailboxstats = Read-Host -Prompt "Which Mailbox do you want to check statistics?"; Get-MailboxStatistics $mailboxstats | ft -Wrap -AutoSize; Get-MailboxStatistics $mailboxstats | fl > "logs\$date-$server-$mailboxstats-mailboxstatistics.txt"; Write-Output "$date-$server-$mailboxstats-mailboxstatistics.txt has been generated with all the details`n" }
-	  5{$checkservice = Read-Host -Prompt "Which service to check the status?"; $status = Get-Service $checkservice ; Write-Host $checkservice is $status.Status `n}
 
 }
 }
 	}
 
- while	 ( $userMenuChoice -ne 6 )
+ while	 ( $userMenuChoice -ne 5 )
 	}
 Stop-Transcript
