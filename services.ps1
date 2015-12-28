@@ -7,7 +7,7 @@ If(-not(Test-Path -Path logs))
   }
 Start-Transcript -Path serviceslogs\log$date.txt  | Out-Null
 
-Write-Output "`nWelcome to the Microsoft Exchange Services Assistant v0.1 This tool is to make Exchange Services management easier.
+Write-Output "`nWelcome to the Microsoft Exchange Services Assistant v0.2 This tool is to make Exchange Services management easier.
 This uses remote powershell connection, so if you do not have it set up, this tool will not work.`n
 http://github.com/audricd/MicrosoftExchangeAssistant `n"
 
@@ -70,6 +70,18 @@ $UM = "MSExchangeUM"
 $UMCR = "MSExchangeUMCR"
 #Filtering Management Service
 $FMS = "FMS"
+#InternetInformationServicesAdmin
+$IISAdmin = "IISAdmin"
+#World Wide Web Publishing Services
+$W3SVC = "W3Svc"
+#Windows Remote Management
+$WinRM = "WinRM"
+
+
+$MailboxServerRole = ($IISAdmin, $ADTopology, $IS, $MBAs, $Rep, $RPC, $ServiceHost, $Throttling, $W3SVC, $WinRM)
+$ClientAccessRole = ($IISAdmin, $ADTopology, $MBRep, $RPC, $ServiceHost, $W3SVC, $WinRM)
+$UnifiedMessagingRole = ($IISAdmin, $ADTopology, $ServiceHost, $UM, $W3SVC, $WinRM)
+$HubTransportRole = ($IISAdmin, $ADTopology, $EdgeSync, $ServiceHost, $Transport, $W3SVC, $WinRM)
 
 Write-Output "These are the Exchange Services:
 MSExchangeADTopology
@@ -100,7 +112,13 @@ MSExchangeTransport
 MSExchangeTransportLogSearch
 MSExchangeUM
 MSExchangeUMCR
-FMS"
+FMS
+
+Non Exchange Server services but still required:
+IISAdmin
+W3Svc
+WinRM
+"
 Try {
 $server = Read-Host -Prompt 'Please input your Exchange server address, in this format "exchange.domain.com"'
 $ExchangeSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri "http://$server/PowerShell" -ErrorAction SilentlyContinue
@@ -120,18 +138,26 @@ Finally
 
 do {
   [int]$userMenuChoice = 0
-  while ( $userMenuChoice -lt 1 -or $userMenuChoice -gt 2) {
+  while ( $userMenuChoice -lt 1 -or $userMenuChoice -gt 6) {
 	Write-Host "1. Check the status of a single service"
-    Write-Host "2. Exit"
+	Write-Host "2. Check if the services required for MailBox role are running"
+	Write-Host "3. Check if the services required for Client Access role are running"
+	Write-Host "4. Check if the services required for Unified Messaging role are running"
+	Write-Host "5. Check if the services required for Hub Transport role are running"
+    Write-Host "6. Exit"
 
     [int]$userMenuChoice = Read-Host "`nPlease choose an option"
 
     switch ($userMenuChoice) {
 	  1{$checkservice = Read-Host -Prompt "Which service to check the status?"; $status = Get-Service $checkservice ; Write-Host $checkservice is $status.Status `n}
+	  2{Get-Service $MailboxServerRole}
+	  3{Get-Service $ClientAccessRole}
+	  4{Get-Service $UnifiedMessagingRole}
+	  5{Get-Service $HubTransportRole}
 }
 }
 	}
 
- while	 ( $userMenuChoice -ne 2 )
+ while	 ( $userMenuChoice -ne 6 )
 	}
 Stop-Transcript
