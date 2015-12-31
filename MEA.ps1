@@ -7,7 +7,7 @@ If(-not(Test-Path -Path logs))
   }
 Start-Transcript -Path logs\log$date.txt  | Out-Null
 
-Write-Output "`nWelcome to the Microsoft Exchange Assistant v0.1.4 This tool is to make diagnostics easier. For Services management, use services.ps1
+Write-Output "`nWelcome to the Microsoft Exchange Assistant v0.1.5 This tool is to make diagnostics easier. For Services management, use services.ps1
 This uses remote powershell connection, so if you do not have it set up, this tool will not work.`n
 http://github.com/audricd/MicrosoftExchangeAssistant `n"
 

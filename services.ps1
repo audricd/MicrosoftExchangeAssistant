@@ -7,7 +7,7 @@ If(-not(Test-Path -Path logs))
   }
 Start-Transcript -Path serviceslogs\log$date.txt  | Out-Null
 
-Write-Output "`nWelcome to the Microsoft Exchange Services Assistant v0.2 This tool is to make Exchange Services management easier.
+Write-Output "`nWelcome to the Microsoft Exchange Services Assistant v0.3 This tool is to make Exchange Services management easier.
 This uses remote powershell connection, so if you do not have it set up, this tool will not work.`n
 http://github.com/audricd/MicrosoftExchangeAssistant `n"
 
@@ -76,12 +76,18 @@ $IISAdmin = "IISAdmin"
 $W3SVC = "W3Svc"
 #Windows Remote Management
 $WinRM = "WinRM"
-
-
+#Roles
+$AllRoles = ($ADTopology, $IISAdmin, $IS, $MBAs, $Rep, $RPC, $ServiceHost, $Throttling, $W3SVC, $WinRM, $MBRep, $W3SVC, $UM, $EdgeSync, $Transport)
 $MailboxServerRole = ($IISAdmin, $ADTopology, $IS, $MBAs, $Rep, $RPC, $ServiceHost, $Throttling, $W3SVC, $WinRM)
 $ClientAccessRole = ($IISAdmin, $ADTopology, $MBRep, $RPC, $ServiceHost, $W3SVC, $WinRM)
 $UnifiedMessagingRole = ($IISAdmin, $ADTopology, $ServiceHost, $UM, $W3SVC, $WinRM)
 $HubTransportRole = ($IISAdmin, $ADTopology, $EdgeSync, $ServiceHost, $Transport, $W3SVC, $WinRM)
+#Check for down services
+$SServicesAllRoles = Get-Service $AllRoles | Where-Object {$_.Status -eq "Stopped"}
+$SSMailboxServerRole = Get-Service $MailboxServerRole | Where-Object {$_.Status -eq "Stopped"}
+$SSClientAccessRole = Get-Service $ClientAccessRole | Where-Object {$_.Status -eq "Stopped"}
+$SSUnifiedMessagingRole = Get-Service $UnifiedMessagingRole | Where-Object {$_.Status -eq "Stopped"}
+$SSHubTransportRole = Get-Service $HubTransportRole | Where-Object {$_.Status -eq "Stopped"}
 
 Write-Output "These are the Exchange Services:
 MSExchangeADTopology
@@ -138,26 +144,38 @@ Finally
 
 do {
   [int]$userMenuChoice = 0
-  while ( $userMenuChoice -lt 1 -or $userMenuChoice -gt 6) {
+  while ( $userMenuChoice -lt 1 -or $userMenuChoice -gt 12) {
 	Write-Host "1. Check the status of a single service"
-	Write-Host "2. Check if the services required for MailBox role are running"
-	Write-Host "3. Check if the services required for Client Access role are running"
-	Write-Host "4. Check if the services required for Unified Messaging role are running"
-	Write-Host "5. Check if the services required for Hub Transport role are running"
-    Write-Host "6. Exit"
+	Write-Host "2. Check if the services required for All roles servers are running"
+	Write-Host "3. Check if the services required for MailBox role are running"
+	Write-Host "4. Check if the services required for Client Access role are running"
+	Write-Host "5. Check if the services required for Unified Messaging role are running"
+	Write-Host "6. Check if the services required for Hub Transport role are running"
+	Write-Host "7. See stopped services required for All roles"
+	Write-Host "8. See stopped services required for MailBox role"
+	Write-Host "9. See stopped services required for Client Access role"
+	Write-Host "10. See stopped services required for Unified Messaging role"
+	Write-Host "11. See stopped services required for Hub Transport role"
+    Write-Host "12. Exit"
 
     [int]$userMenuChoice = Read-Host "`nPlease choose an option"
 
     switch ($userMenuChoice) {
 	  1{$checkservice = Read-Host -Prompt "Which service to check the status?"; $status = Get-Service $checkservice ; Write-Host $checkservice is $status.Status `n}
-	  2{Get-Service $MailboxServerRole}
-	  3{Get-Service $ClientAccessRole}
-	  4{Get-Service $UnifiedMessagingRole}
-	  5{Get-Service $HubTransportRole}
-}
+	  2{Get-Service $AllRoles}
+	  3{Get-Service $MailboxServerRole}
+	  4{Get-Service $ClientAccessRole}
+	  5{Get-Service $UnifiedMessagingRole}
+	  6{Get-Service $HubTransportRole}
+	  7{If($SServicesAllRoles.Count -eq 0){Write-Host "All services for all role are running `n"} else {$SServicesAllRoles}}
+	  8{If($SSMailboxServerRole.Count -eq 0){Write-Host "All services for MailBox role are running `n"} else {$SSMailboxServerRole}}
+	  9{If($SSClientAccessRole.Count -eq 0){Write-Host "All services for Client Access role are running `n"} else {$SSClientAccessRole}}
+	  10{If($SSUnifiedMessagingRole.Count -eq 0){Write-Host "All services for Unified Messaging role are running `n"} else {$SSUnifiedMessagingRole}}
+	  11{If($SSHubTransportRole.Count -eq 0){Write-Host "All services for Hub Transport role are running `n"} else {$SSHubTransportRole}}
+	}
 }
 	}
 
- while	 ( $userMenuChoice -ne 6 )
+ while	 ( $userMenuChoice -ne 12 )
 	}
 Stop-Transcript
